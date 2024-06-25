@@ -52,7 +52,7 @@ public:
 		cout << "HConstructor\t" << this << endl;
 	}
 
-	~Human()
+	virtual ~Human()
 	{
 		cout << "HDestructor\t" << this << endl;
 	}
