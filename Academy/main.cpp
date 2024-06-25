@@ -241,11 +241,11 @@ public:
 	}
 };
 
-std::ostream& operator<<(std::ostream& os, const Human& obj)
-{
-	obj.info();
-	return os;
-}
+//std::ostream& operator<<(std::ostream& os, const Human& obj)
+//{
+//	obj.info();
+//	return os;
+//}
 
 
 #define INHERITANCE_CHECK
