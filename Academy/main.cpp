@@ -66,6 +66,11 @@ public:
 
 };
 
+std::ostream& operator<<(std::ostream& os, const Human& obj)
+{
+	return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age() << "y/o " << endl;
+}
+
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
 
@@ -134,6 +139,11 @@ public:
 	}
 };
 
+std::ostream& operator<<(std::ostream& os,  const Student & obj)
+{
+	return os <<(Human&)obj<<" " << obj.get_speciality() << " " << obj.get_group() << " " << obj.get_rating() << " " << obj.get_attendance();
+}
+
 #define TEACHER_TAKE_PARAMETERS const std::string& speciality, unsigned int experience
 #define TEACHER_GIVE_PARAMETERS speciality,experience
 
@@ -143,7 +153,7 @@ class Teacher : public Human
 	std::string speciality;
 	unsigned int experience;
 public:
-	const std::string& get_speciallity()const
+	const std::string& get_speciality()const
 	{
 		return speciality;
 	}
@@ -182,6 +192,11 @@ public:
 		cout << speciality << " " << experience << " " << "years" << endl;
 	}
 };
+
+std::ostream& operator<<(std::ostream& os, const Teacher& obj)
+{
+	return os <<(Human)obj<<" " << obj.get_speciality() << " " << obj.get_experience() << " y/o ";
+}
 
 #define GRADUATE_TAKE_PARAMETERS const std::string& dip_subj, const std::string& practice_place, const double& dip_complete
 #define GRADUATE_GIVE_PARAMETERS dip_subj, practice_place, dip_complete
@@ -241,6 +256,11 @@ public:
 	}
 };
 
+std::ostream& operator<<(std::ostream& os, const Graduate& obj)
+	{
+		return os <<(Student&)obj<<" " << obj.get_dip_subj() << " " << obj.get_practice_place() << " " << obj.get_dip_complete() << " " << endl;
+	}
+
 //std::ostream& operator<<(std::ostream& os, const Human& obj)
 //{
 //	obj.info();
@@ -268,7 +288,7 @@ void main()
 	Stud_1.info();
 #endif // INHERITANCE_CHECK
 
-	// Generalization:
+	// Generalization (Upcast):
 	Human* group[] =
 	{
 		new Student("Pinkman", "Jessie", 22, "Chemistry", "WW_220", 70, 97),
@@ -280,9 +300,14 @@ void main()
 	cout << delimeter << endl;
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
+		cout << typeid(*group[i]).name() << ":\t";
+		//Specialization (Downcast):
+		if (typeid(*group[i]) == typeid(Student))cout << *dynamic_cast<Student*>(group[i]) << endl;
+		if (typeid(*group[i]) == typeid(Teacher))cout << *dynamic_cast<Teacher*>(group[i]) << endl;
+		if (typeid(*group[i]) == typeid(Graduate))cout << *dynamic_cast<Graduate*>(group[i]) << endl;
 		//cout<<i<<" "<<sizeof(group[i])<<"\n";
 		//group[i]->info();
-		cout << *group[i] << endl;
+		//cout << *group[i] << endl;
 		cout << delimeter << endl;
 	}
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
