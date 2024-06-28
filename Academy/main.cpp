@@ -63,12 +63,16 @@ public:
 	{
 		cout << last_name << "  " <<first_name << "   " << age << " y/o" << endl;
 	}
+	virtual std::ostream& info(std::ostream& os)const
+	{
+		return os << last_name << "  " << first_name << "   " << age << " y/o";
+	}
 
 };
 
 std::ostream& operator<<(std::ostream& os, const Human& obj)
 {
-	return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age() << "y/o " << endl;
+	return obj.info(os);
 }
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
@@ -137,12 +141,14 @@ public:
 		Human::info();
 		cout << speciality << " " << group << " " << rating << " " << attendance << " " << endl;
 	}
+	 std::ostream& info(std::ostream& os)const override
+	 {
+		 Human::info(os)<<" "
+		  << speciality << " " << group << " " << rating << " " << attendance;
+	 }
 };
 
-std::ostream& operator<<(std::ostream& os,  const Student & obj)
-{
-	return os <<(Human&)obj<<" " << obj.get_speciality() << " " << obj.get_group() << " " << obj.get_rating() << " " << obj.get_attendance();
-}
+
 
 #define TEACHER_TAKE_PARAMETERS const std::string& speciality, unsigned int experience
 #define TEACHER_GIVE_PARAMETERS speciality,experience
@@ -190,6 +196,10 @@ public:
 	{
 		Human::info();
 		cout << speciality << " " << experience << " " << "years" << endl;
+	}
+	std::ostream& info(std::ostream& os)const
+	{
+		return Human::info(os)<<" "<< speciality << " " << experience << " " << "years";
 	}
 };
 
@@ -254,6 +264,11 @@ public:
 		Student::info();
 		cout << dip_subj << " " << practice_place << " " << dip_complete << " " << endl;
 	}
+	 std:: ostream& info(std::ostream& os)const override
+	 {
+		 return Student::info(os) << " "
+			 << dip_subj << " " << practice_place << " " << dip_complete << " ";
+	 }
 };
 
 std::ostream& operator<<(std::ostream& os, const Graduate& obj)
@@ -263,8 +278,8 @@ std::ostream& operator<<(std::ostream& os, const Graduate& obj)
 
 //std::ostream& operator<<(std::ostream& os, const Human& obj)
 //{
-//	obj.info();
-//	return os;
+//	
+//	return os<<obj._get_last_name()<<" "<<obj.get_first_name()<<" "<<obj.get_age(); 
 //}
 
 
