@@ -1,6 +1,7 @@
 //Academy
 #include <iostream>
 #include <string>
+#include <fstream>
 using namespace std;
 
 #define delimeter "\n------------------------------------------------\n"
@@ -13,6 +14,10 @@ using namespace std;
 
 class Human
 {
+	static const int HUMAN_TYPE_WIDTH = 10;
+	static const int LAST_NAME_WIDTH = 15;
+	static const int FIRST_NAME_WIDTH = 15;
+	static const int AGE_WIDTH = 5;
 	std::string last_name;
 	std::string first_name;
 	unsigned int age;
@@ -67,6 +72,15 @@ public:
 	{
 		return os << last_name << "  " << first_name << "   " << age << " y/o";
 	}
+	virtual std::ofstream& info(std::ofstream& ofs)const
+	{
+		//ofs << strchr(typeid(*this).name(),' ') + 1 << " :\t" << last_name << "  " << first_name << "   " << age;
+		ofs.width(HUMAN_TYPE_WIDTH);ofs << left<<std::string(strchr(typeid(*this).name(), ' ') + 1) + ":";
+		ofs.width(LAST_NAME_WIDTH);ofs <<left<< last_name;
+		ofs.width(FIRST_NAME_WIDTH); ofs <<left<< first_name;
+		ofs.width(AGE_WIDTH); ofs <<left<< age;
+		return ofs;
+	}
 
 };
 
@@ -74,12 +88,20 @@ std::ostream& operator<<(std::ostream& os, const Human& obj)
 {
 	return obj.info(os);
 }
+std::ofstream& operator<<(std::ofstream& ofs, const Human& obj)
+{
+	return obj.info(ofs);
+}
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
 
 class Student :public Human
 {
+	static const int SPECIALITY_WIDTH = 25;
+	static const int GROUP_WIDTH = 8;
+	static const int RATING_WIDTH = 8;
+	static const int ATTENDANCE_WIDTH = 8;
 	std::string speciality;
 	std::string group;
 	double rating;
@@ -143,9 +165,19 @@ public:
 	}
 	 std::ostream& info(std::ostream& os)const override
 	 {
-		 Human::info(os)<<" "
-		  << speciality << " " << group << " " << rating << " " << attendance;
+		 return Human::info(os)<<" "
+		  << speciality << " " << group << " " << rating << " " << attendance<<" ";
 	 }
+	  std::ofstream& info(std::ofstream& ofs)const override
+	 {
+		  Human::info(ofs);
+		  ofs.width(SPECIALITY_WIDTH);  ofs<< speciality;
+		  ofs.width(GROUP_WIDTH);		ofs << group;
+		  ofs.width(RATING_WIDTH);		ofs << rating;
+		  ofs.width(ATTENDANCE_WIDTH);	ofs << attendance;
+		  return ofs;
+	 }
+
 };
 
 
@@ -156,6 +188,8 @@ public:
 
 class Teacher : public Human
 {
+	static const int SPECIALITY_WIDTH = 25;
+	static const int EXPERIENCE_WIDTH = 5;
 	std::string speciality;
 	unsigned int experience;
 public:
@@ -201,6 +235,13 @@ public:
 	{
 		return Human::info(os)<<" "<< speciality << " " << experience << " " << "years";
 	}
+	std::ofstream& info(std::ofstream& ofs)const override
+	{
+		Human::info(ofs);
+		ofs.width(SPECIALITY_WIDTH);ofs << speciality;
+		ofs.width(EXPERIENCE_WIDTH);ofs << experience;
+		return ofs;
+	}
 };
 
 std::ostream& operator<<(std::ostream& os, const Teacher& obj)
@@ -213,6 +254,7 @@ std::ostream& operator<<(std::ostream& os, const Teacher& obj)
 
 class Graduate :public Student
 {
+	static const int DIP_SUBJ_WIDTH = 32;
 	std::string dip_subj;
 	std::string practice_place;
 	double dip_complete;
@@ -269,6 +311,12 @@ public:
 		 return Student::info(os) << " "
 			 << dip_subj << " " << practice_place << " " << dip_complete << " ";
 	 }
+	 std::ofstream& info(std::ofstream& ofs)const override
+	 {
+		 Student::info(ofs) ;
+		 ofs.width(DIP_SUBJ_WIDTH); ofs << dip_subj;
+		 return ofs;
+	 }
 };
 
 std::ostream& operator<<(std::ostream& os, const Graduate& obj)
@@ -282,6 +330,37 @@ std::ostream& operator<<(std::ostream& os, const Graduate& obj)
 //	return os<<obj._get_last_name()<<" "<<obj.get_first_name()<<" "<<obj.get_age(); 
 //}
 
+void Print( Human* group[], const int n)
+{
+	cout << delimeter << endl;
+	for (int i = 0; i < n; i++)
+	{
+		//group[i]->info();
+		cout << *group[i] << endl;
+		cout << delimeter << endl;
+	}
+}
+
+void Clear(Human* group[], const int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		delete group[i];
+		cout << delimeter;
+	}
+}
+
+void Save(Human* group[], const int n, const std::string& filename)
+{
+	std::ofstream fout(filename);
+	for (int i = 0; i < n; i++)
+	{
+		fout << *group[i] << endl;
+	}
+	fout.close();
+	std::string cmd = "notepad " + filename;
+	system(cmd.c_str());// c-str- возвращает содержимое объекта  std::string в виде обычной C-string(Null terminated line)
+}
 
 #define INHERITANCE_CHECK
 
@@ -309,26 +388,11 @@ void main()
 		new Student("Pinkman", "Jessie", 22, "Chemistry", "WW_220", 70, 97),
 		new Teacher("White", "Walter", 50, "Chemistry", 25),
 		new Student("Vercetty", "Tommy", 30,"Theft","Vice",97,98),
-		new Graduate("John","Snow",24,"Biology","WR_220",65,77,"Cooking","CookFactory",78)
-
+		new Graduate("John","Snow",24,"Biology","WR_220",65,77,"Cooking","CookFactory",78),
+		new Teacher ("Diaz", "Ricardo", 50, "Weapons distribution",20)
 	};
-	cout << delimeter << endl;
-	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
-	{
-		cout << typeid(*group[i]).name() << ":\t";
-		//Specialization (Downcast):
-		if (typeid(*group[i]) == typeid(Student))cout << *dynamic_cast<Student*>(group[i]) << endl;
-		if (typeid(*group[i]) == typeid(Teacher))cout << *dynamic_cast<Teacher*>(group[i]) << endl;
-		if (typeid(*group[i]) == typeid(Graduate))cout << *dynamic_cast<Graduate*>(group[i]) << endl;
-		//cout<<i<<" "<<sizeof(group[i])<<"\n";
-		//group[i]->info();
-		//cout << *group[i] << endl;
-		cout << delimeter << endl;
-	}
-	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
-	{
-		delete group[i];
-		cout << delimeter;
-	}
-     
+	Print(group, sizeof(group) / sizeof(group[0]));
+	Save(group, sizeof(group) / sizeof(group[0]), "group.txt");
+	Clear(group, sizeof(group) / sizeof(group[0]));
+	
 }
